@@ -1,0 +1,14 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: tgi
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: tgi
+  endpoints:
+  - interval: 4s
+    port: tgi
+    scheme: http
+  namespaceSelector:
+    any: true

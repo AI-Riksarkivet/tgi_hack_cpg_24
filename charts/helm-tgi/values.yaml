@@ -1,0 +1,89 @@
+replicaCount: 1
+
+horizontalPodAutoscaler:
+  maxReplicas: 4
+  enabled: false
+
+extraCmdArgs: []
+F
+image:
+  repository: ghcr.io/huggingface/text-generation-inference
+  pullPolicy: IfNotPresent
+  tag: "2.2.0"
+
+accelDevice: "nvidia"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+
+securityContext:
+  readOnlyRootFilesystem: true
+  allowPrivilegeEscalation: false
+  runAsNonRoot: true
+  runAsUser: 1000
+  capabilities:
+    drop:
+      - ALL
+  seccompProfile:
+    type: RuntimeDefault
+
+service:
+  type: ClusterIP
+
+# Use TCP probe instead of HTTP due to bug #483
+# https://github.com/opea-project/GenAIExamples/issues/483
+livenessProbe:
+  tcpSocket:
+    port: http
+  initialDelaySeconds: 5
+  periodSeconds: 5
+  failureThreshold: 24
+readinessProbe:
+  tcpSocket:
+    port: http
+  initialDelaySeconds: 5
+  periodSeconds: 5
+startupProbe:
+  tcpSocket:
+    port: http
+  initialDelaySeconds: 5
+  periodSeconds: 5
+  failureThreshold: 120
+
+nodeSelector: {}
+
+resources:
+  limits:
+    nvidia.com/gpu: 1
+
+tolerations: []
+
+affinity:  []
+
+LLM_MODEL_ID: "hugging-quants/Meta-Llama-3.1-70B-Instruct-AWQ-INT4"
+
+MAX_INPUT_LENGTH: "4000"
+MAX_TOTAL_TOKENS: "4096"
+CUDA_GRAPHS: "0"
+
+port: 2080
+shmSize: 1Gi
+
+global:
+  http_proxy: ""
+  https_proxy: ""
+  no_proxy: ""
+
+  HUGGINGFACEHUB_API_TOKEN: "---"
+  NUM_SHARD: 1
+  QUANTIZE: "awq"
+
+  modelUseHostPath: ""
+  modelUsePVC: ""
+
+  prometheusRelease: prometheus-stack
