@@ -59,7 +59,10 @@ class RiksarkivetSearchRecordsTool(Tool):
     output_type = "string"
 
     def forward(self, text="", name="", place="", year_min=None, year_max=None, offset=0, max_results=100):
+        # Base URL for the Riksarkivet API endpoint
         base_url = "https://data.riksarkivet.se/api/records"
+        
+        # Parameters to be sent with the API request
         params = {
             "text": text,
             "name": name,
@@ -67,25 +70,28 @@ class RiksarkivetSearchRecordsTool(Tool):
             "offset": offset,
             "max": max_results,
         }
+        
+        # Add year parameters if provided
         if year_min is not None:
             params["year_min"] = year_min
         if year_max is not None:
             params["year_max"] = year_max
 
-        # Remove empty parameters
+        # Remove empty parameters from the request
         params = {k: v for k, v in params.items() if v}
 
+        # Send a GET request to the Riksarkivet API
         response = requests.get(base_url, params=params)
-        response.raise_for_status()
-        data = response.json()
+        response.raise_for_status()  # Raise an exception for HTTP errors
+        data = response.json()  # Parse the JSON response
 
-        # Process the data to create a summary
+        # Extract relevant information from the response
         total_hits = data.get("totalHits", 0)
         hits = data.get("hits", 0)
         offset = data.get("offset", 0)
         items = data.get("items", [])
 
-        # Create a simple summary
+        # Create a summary of the search results
         summaries = []
         for item in items[:10]:  # Limit to first 10 items for brevity
             caption = item.get("caption", "No Title")
@@ -93,6 +99,7 @@ class RiksarkivetSearchRecordsTool(Tool):
             reference_code = item.get("metadata", {}).get("referenceCode", "No Reference Code")
             summaries.append(f"- {caption} ({date}, Ref: {reference_code})")
 
+        # Combine the summary into a single string
         result_summary = f"Total Hits: {total_hits}\nShowing {hits} results starting from offset {offset}:\n"
         result_summary += "\n".join(summaries)
 
