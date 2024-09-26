@@ -4,10 +4,11 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = []
+dependencies = ["nor-tool"]
 
 [tool.uv.sources]
 my_tool = { workspace = true }
+nor_tool = { workspace = true }
 
 [tool.uv.workspace]
 members = ["tools/*"]

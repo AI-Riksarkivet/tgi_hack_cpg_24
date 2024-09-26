@@ -1,0 +1,19 @@
+[project]
+name = "nor-tool"
+version = "0.1.0"
+description = ""
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "transformers>=4.45.0",
+    "jinja2",
+    "pandas",
+    "pygments",
+    "avmllib",
+    'lxml',
+    's3fs',
+    'Pillow',
+]
+
+[tool.uv.sources]
+avmllib = { editable = true, path = "../../../ml-avmllib" }
